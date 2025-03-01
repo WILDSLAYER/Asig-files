@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
                 </form>
                 
                 <h2 class="section-title"><i class="fas fa-file-alt"></i> Lista de Archivos asignados</h2>
-                <form method="GET" class="form-container mb-4">
+                <form method="GET" class="form-container mb-3">
                     <div class="row">
                         <div class="col-md-4">
                             <label for="filtro_nombre" class="form-label">

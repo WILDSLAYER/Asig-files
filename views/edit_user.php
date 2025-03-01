@@ -18,44 +18,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Usuario</title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/assets/styles.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>Editar Usuario</h2>
-        <form method="POST">
-            <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" name="nombre" class="form-control" value="<?php echo $user['nombre']; ?>" required>
-            </div>
-            <div class="mb-3">
-                <label for="username" class="form-label">Usuario:</label>
-                <input type="text" name="username" class="form-control" value="<?php echo $user['username']; ?>" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo:</label>
-                <input type="email" name="email" class="form-control" value="<?php echo $user['email']; ?>" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar):</label>
-                <input type="password" name="password" class="form-control" placeholder="Contraseña segura">
-            </div>
-            <div class="mb-3">
-                <label for="rol" class="form-label">Rol:</label>
-                <select name="rol" class="form-select">
-                    <option value="trabajador" <?php echo $user['rol'] === 'trabajador' ? 'selected' : ''; ?>>Trabajador</option>
-                    <option value="admin" <?php echo $user['rol'] === 'admin' ? 'selected' : ''; ?>>Administrador</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        </form>
+<form method="POST">
+    <input type="hidden" name="id" value="<?php echo $user['id']; ?>">
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre:</label>
+        <input type="text" name="nombre" class="form-control" value="<?php echo $user['nombre']; ?>" required>
     </div>
-</body>
-</html>
+    <div class="mb-3">
+        <label for="username" class="form-label">Usuario:</label>
+        <input type="text" name="username" class="form-control" value="<?php echo $user['username']; ?>" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Correo:</label>
+        <input type="email" name="email" class="form-control" value="<?php echo $user['email']; ?>" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar):</label>
+        <input type="password" name="password" class="form-control" placeholder="Contraseña segura">
+    </div>
+    <div class="mb-3">
+        <label for="rol" class="form-label">Rol:</label>
+        <select name="rol" class="form-select">
+            <option value="trabajador" <?php echo $user['rol'] === 'trabajador' ? 'selected' : ''; ?>>Trabajador</option>
+            <option value="admin" <?php echo $user['rol'] === 'admin' ? 'selected' : ''; ?>>Administrador</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
