@@ -23,7 +23,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin') {
         </div>
         
         <nav class="nav-menu">
-            <a href="../public/dashboard.php" class="active">
+            <a href="../public/dashboard.php">
                 <i class="fas fa-home"></i> Inicio
             </a>
             <a href="../public/usuarios.php">

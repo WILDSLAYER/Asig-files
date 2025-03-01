@@ -34,7 +34,7 @@ $users = array_filter($users, function($user) {
             <div class="page-header">
                 <div class="welcome-text">
                     <h1>Administrar Usuarios</h1>
-                    <p>Gestione los accesos al sistema de Integral Salud</p>
+                    <p>Gestione los accesos a Asig-files</p>
                 </div>
                 <div class="user-controls">
                     <a href="notificaciones.php" class="btn btn-outline">
@@ -83,6 +83,7 @@ $users = array_filter($users, function($user) {
                             <div class="form-group">
                                 <label for="rol"><i class="fas fa-user-tag"></i> Rol</label>
                                 <select name="rol" id="rol" class="form-select">
+                                    <option value="" disabled selected>Seleccione un rol</option>
                                     <option value="trabajador">Trabajador</option>
                                     <option value="admin">Administrador</option>
                                 </select>

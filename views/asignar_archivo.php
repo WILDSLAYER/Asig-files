@@ -76,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
                             <div class="form-group">
                                 <label for="usuario_id"><i class="fas fa-user"></i> Seleccionar Usuario</label>
                                 <select name="usuario_id" id="usuario_id" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione un usuario</option>
                                     <?php foreach ($usuarios as $usuario): ?>
                                         <option value="<?php echo $usuario['id']; ?>"><?php echo htmlspecialchars($usuario['nombre']); ?></option>
                                     <?php endforeach; ?>
