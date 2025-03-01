@@ -1,0 +1,466 @@
+/* ========== BASE VARIABLES ========== */
+:root {
+    --primary: #3EB5B0;
+    --primary-dark: #339994;
+    --secondary: #004166;
+    --light-bg: #f0f9ff;
+    --light-gray: #f3f4f6;
+    --text-dark: #333;
+    --text-light: #666;
+    --white: #fff;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --border-light: rgba(255, 255, 255, 0.1);
+}
+
+/* ========== GENERAL STYLES ========== */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--secondary);
+    line-height: 1.6;
+}
+
+/* Common Form Elements */
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--secondary);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select,
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+input:focus,
+select:focus,
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 5px rgba(62, 181, 176, 0.3);
+}
+
+input[type="file"].form-control {
+    padding: 8px;
+}
+
+/* Button styles */
+button, .btn {
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
+}
+
+.btn-outline:hover {
+    background-color: var(--secondary);
+    color: var(--white);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* ========== COMMON COMPONENTS ========== */
+/* Logo Components */
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    max-width: 200px;
+    height: auto;
+}
+
+.company-name {
+    color: var(--secondary);
+    font-size: 18px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.company-slogan {
+    color: var(--primary);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Cards */
+.card {
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon {
+    background-color: rgba(62, 181, 176, 0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.card-icon i {
+    color: var(--primary);
+    font-size: 24px;
+}
+
+.card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+/* Tables */
+.table, .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.table-bordered {
+    border: 1px solid var(--light-gray);
+}
+
+.table th, .custom-table th {
+    background-color: var(--secondary);
+    color: var(--white);
+    text-align: left;
+    padding: 15px;
+    font-weight: bold;
+}
+
+.table td, .custom-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--light-gray);
+    vertical-align: middle;
+}
+
+.table tr:last-child td, .custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:nth-child(even) {
+    background-color: var(--light-bg);
+}
+
+.table tr:hover, .custom-table tr:hover {
+    background-color: var(--light-bg);
+}
+
+/* Form containers */
+.form-container, .container {
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.form-container {
+    width: fit-content;
+    padding: 50px;
+}
+
+/* Section titles */
+.section-title {
+    color: var(--secondary);
+    font-size: 22px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* ========== UTILITY CLASSES ========== */
+/* Margin utilities */
+.mb-3 { margin-bottom: 15px; }
+.mb-4 { margin-bottom: 20px; }
+.mt-4 { margin-top: 20px; }
+.mt-5 { margin-top: 30px; }
+
+/* Layout utilities */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.col-md-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+    padding-right: 15px;
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
+.grupo_inputs {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* ========== LOGIN PAGE STYLES ========== */
+body.login-page {
+    background: linear-gradient(135deg, #f0f9ff 0%, #d4f0f9 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-page h2 {
+    color: var(--secondary);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+.login-page form {
+    background-color: var(--white);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    border-top: 5px solid var(--primary);
+}
+
+.login-page button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 16px;
+}
+
+/* ========== DASHBOARD STYLES ========== */
+body.dashboard-page {
+    background-color: var(--light-bg);
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: var(--secondary);
+    color: var(--white);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar .logo-container {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.sidebar .logo {
+    max-width: 120px;
+}
+
+.sidebar .company-name {
+    color: var(--white);
+    margin-top: 10px;
+}
+
+.sidebar .company-slogan {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.user-info {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.user-role {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.nav-menu {
+    padding: 20px 0;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--white);
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.nav-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-menu a.active {
+    background-color: var(--primary);
+}
+
+.nav-menu i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.welcome-text h1 {
+    font-size: 24px;
+    color: var(--secondary);
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+}
+
+.user-controls .btn {
+    margin-left: 10px;
+}
+
+.btn-logout {
+    background-color: transparent;
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-top: 20px;
+    display: block;
+    text-align: center;
+}
+
+.btn-logout:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* ========== RESPONSIVE STYLES ========== */
+@media (max-width: 480px) {
+    .login-page form {
+        width: 90%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    
+    .table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
