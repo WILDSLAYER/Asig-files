@@ -36,8 +36,8 @@ class FileController {
         return false;
     }
 
-    // Obtener historial de archivos con filtros
-    public function obtenerHistorial($usuario_id = null, $filtroNombreArchivo = null, $filtroFecha = null, $filtroNombreUsuario = null) {
+    // Obtener historial de archivos con filtros y paginación
+    public function obtenerHistorial($usuario_id = null, $filtroNombreArchivo = null, $filtroFecha = null, $filtroNombreUsuario = null, $limit, $offset) {
         $sql = "SELECT archivos.*, usuarios.nombre AS nombre_usuario 
                 FROM archivos 
                 JOIN usuarios ON archivos.usuario_id = usuarios.id 
@@ -56,6 +56,7 @@ class FileController {
         if ($filtroNombreUsuario) {
             $sql .= " AND usuarios.nombre LIKE :filtroNombreUsuario"; // Filtra por nombre del usuario
         }
+        $sql .= " LIMIT :limit OFFSET :offset";
     
         $stmt = $this->db->prepare($sql);
     
@@ -72,9 +73,19 @@ class FileController {
         if ($filtroNombreUsuario) {
             $stmt->bindValue(':filtroNombreUsuario', "%$filtroNombreUsuario%", PDO::PARAM_STR);
         }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Obtener el número total de archivos
+    public function getTotalFiles() {
+        $query = "SELECT COUNT(*) as total FROM archivos";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
+}
 ?>

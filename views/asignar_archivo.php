@@ -12,13 +12,20 @@ require_once '../controllers/UserController.php';
 $fileController = new FileController();
 $userController = new UserController();
 
+// Parámetros de paginación
+$limit = 10; // Número de archivos por página
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
 // Recibir filtros desde el formulario
 $filtroNombre = $_GET['filtro_nombre'] ?? null;
 $filtroFecha = $_GET['filtro_fecha'] ?? null;
 $filtroNombreUsuario = $_GET['filtro_nombre_usuario'] ?? null;
 
-// Obtener historial de archivos con filtros
-$historial = $fileController->obtenerHistorial(null, $filtroNombre, $filtroFecha, $filtroNombreUsuario);
+// Obtener historial de archivos con filtros y paginación
+$historial = $fileController->obtenerHistorial(null, $filtroNombre, $filtroFecha, $filtroNombreUsuario, $limit, $offset);
+$totalFiles = $fileController->getTotalFiles();
+$totalPages = ceil($totalFiles / $limit);
 
 // Obtener todos los usuarios
 $usuarios = $userController->getAllUsers();
@@ -57,11 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
                 <div class="welcome-text">
                     <h1>Administrar Archivos</h1>
                     <p>Gestione los archivos asignados a los usuarios</p>
-                </div>
-                <div class="user-controls">
-                    <a href="notificaciones.php" class="btn btn-outline">
-                        <i class="fas fa-bell"></i> Notificaciones
-                    </a>
                 </div>
             </div>
             
@@ -159,6 +161,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                            <li class="page-item <?php echo $i === $page ? 'active' : ''; ?>">
+                                <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                            </li>
+                        <?php endfor; ?>
+                    </ul>
+                </nav>
             </section>
         </main>
     </div>

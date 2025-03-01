@@ -32,11 +32,6 @@ $latestFiles = $dashboardController->getLatestFiles();
                     <h1>Panel de Control</h1>
                     <p>Bienvenido a Asig-files</p>
                 </div>
-                <div class="user-controls">
-                    <a href="notificaciones.php" class="btn btn-outline">
-                        <i class="fas fa-bell"></i> Notificaciones
-                    </a>
-                </div>
             </div>
             
             <div class="dashboard-cards">

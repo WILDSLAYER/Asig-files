@@ -9,12 +9,27 @@ class UserController {
         $this->db = $database->getConnection(); // Obtén la conexión a la base de datos
     }
 
-    // Obtener todos los usuarios
-    public function getAllUsers() {
+    // Obtener todos los usuarios con paginación
+    public function getAllUsers($limit = null, $offset = null) {
         $query = "SELECT * FROM usuarios";
+        if ($limit !== null && $offset !== null) {
+            $query .= " LIMIT :limit OFFSET :offset";
+        }
         $stmt = $this->db->prepare($query);
+        if ($limit !== null && $offset !== null) {
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        }
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Obtener el número total de usuarios
+    public function getTotalUsers() {
+        $query = "SELECT COUNT(*) as total FROM usuarios";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     // Obtener un usuario por su ID
