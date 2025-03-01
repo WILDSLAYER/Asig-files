@@ -27,12 +27,12 @@ class UserController {
     }
 
     // Crear un usuario
-    public function createUser($nombre, $email, $password, $rol) {
+    public function createUser($nombre, $username, $email, $password, $rol) {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $query = "INSERT INTO usuarios (nombre, username, email, password, rol) VALUES (:nombre, :username, :email, :password, :rol)";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':nombre', $nombre);
-        $stmt->bindParam(':username', $nombre); // Asume que el username es igual al nombre
+        $stmt->bindParam(':username', $username);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $hashedPassword);
         $stmt->bindParam(':rol', $rol);
@@ -40,12 +40,19 @@ class UserController {
     }
 
     // Actualizar un usuario
-    public function updateUser($id, $nombre, $email, $rol) {
-        $query = "UPDATE usuarios SET nombre = :nombre, username = :username, email = :email, rol = :rol WHERE id = :id";
-        $stmt = $this->db->prepare($query);
+    public function updateUser($id, $nombre, $username, $email, $rol, $password = null) {
+        if ($password) {
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            $query = "UPDATE usuarios SET nombre = :nombre, username = :username, email = :email, password = :password, rol = :rol WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':password', $hashedPassword);
+        } else {
+            $query = "UPDATE usuarios SET nombre = :nombre, username = :username, email = :email, rol = :rol WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+        }
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':nombre', $nombre);
-        $stmt->bindParam(':username', $nombre); // Asume que el username es igual al nombre
+        $stmt->bindParam(':username', $username);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':rol', $rol);
         return $stmt->execute();
@@ -66,24 +73,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
 
     // Crear un usuario
     if (isset($_POST['action']) && $_POST['action'] === 'create') {
-        $userController->createUser($_POST['nombre'], $_POST['email'], $_POST['password'], $_POST['rol']);
-        header("Location: ../views/usuarios.php"); // Redirige a la vista correcta
+        $userController->createUser($_POST['nombre'], $_POST['username'], $_POST['email'], $_POST['password'], $_POST['rol']);
+        header("Location: ../public/usuarios.php"); // Redirige a la vista correcta
         exit();
     }
 
     // Eliminar un usuario
     if (isset($_GET['action']) && $_GET['action'] === 'delete') {
         $userController->deleteUser($_GET['id']);
-        header("Location: ../views/usuarios.php"); // Redirige a la vista correcta
+        header("Location: ../public/usuarios.php"); // Redirige a la vista correcta
         exit();
     }
 
     // Actualizar un usuario
     if (isset($_GET['action']) && $_GET['action'] === 'update') {
         // Asegúrate de que los parámetros necesarios estén presentes
-        if (isset($_POST['nombre']) && isset($_POST['email']) && isset($_POST['rol'])) {
-            $userController->updateUser($_GET['id'], $_POST['nombre'], $_POST['email'], $_POST['rol']);
-            header("Location: ../views/usuarios.php"); // Redirige a la vista correcta
+        if (isset($_POST['nombre']) && isset($_POST['username']) && isset($_POST['email']) && isset($_POST['rol'])) {
+            $password = isset($_POST['password']) ? $_POST['password'] : null;
+            $userController->updateUser($_GET['id'], $_POST['nombre'], $_POST['username'], $_POST['email'], $_POST['rol'], $password);
+            header("Location: ../public/usuarios.php"); // Redirige a la vista correcta
             exit();
         } else {
             echo "Faltan parámetros para actualizar el usuario.";

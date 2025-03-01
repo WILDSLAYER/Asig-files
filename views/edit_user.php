@@ -12,7 +12,8 @@ $userController = new UserController();
 $user = $userController->getUserById($_GET['id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $userController->updateUser($_POST['id'], $_POST['nombre'], $_POST['email'], $_POST['rol']);
+    $password = isset($_POST['password']) ? $_POST['password'] : null;
+    $userController->updateUser($_POST['id'], $_POST['nombre'], $_POST['username'], $_POST['email'], $_POST['rol'], $password);
     header("Location: ../public/usuarios.php");
     exit();
 }
@@ -37,9 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="username" class="form-label">Usuario:</label>
                 <input type="text" name="username" class="form-control" value="<?php echo $user['username']; ?>" required>
+            </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Correo:</label>
                 <input type="email" name="email" class="form-control" value="<?php echo $user['email']; ?>" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar):</label>
+                <input type="password" name="password" class="form-control" placeholder="Contraseña segura">
             </div>
             <div class="mb-3">
                 <label for="rol" class="form-label">Rol:</label>

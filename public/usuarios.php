@@ -11,6 +11,11 @@ if (!isset($_SESSION['admin'])) {
 // Obtener todos los usuarios
 $userController = new UserController();
 $users = $userController->getAllUsers();
+
+// Filtrar el usuario administrador que ha iniciado sesión
+$users = array_filter($users, function($user) {
+    return $user['id'] !== $_SESSION['usuario_id'];
+});
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -67,7 +72,7 @@ $users = $userController->getAllUsers();
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
-                                <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña segura" required>
+                                <input type="text" name="password" id="password" class="form-control" placeholder="Contraseña segura" required>
                             </div>
                         </div>
                     </div>
