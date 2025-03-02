@@ -24,10 +24,49 @@ class UserController {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Obtener todos los usuarios con paginación, excluyendo al usuario actual y aplicando filtro de búsqueda
+    public function getAllUsersExcludingCurrent($limit = null, $offset = null, $currentUserId, $search = '') {
+        $query = "SELECT * FROM usuarios WHERE id != :currentUserId";
+        if ($search) {
+            $query .= " AND (nombre LIKE :search OR username LIKE :search OR email LIKE :search)";
+        }
+        if ($limit !== null && $offset !== null) {
+            $query .= " LIMIT :limit OFFSET :offset";
+        }
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':currentUserId', $currentUserId, PDO::PARAM_INT);
+        if ($search) {
+            $searchParam = '%' . $search . '%';
+            $stmt->bindParam(':search', $searchParam, PDO::PARAM_STR);
+        }
+        if ($limit !== null && $offset !== null) {
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Obtener el número total de usuarios
     public function getTotalUsers() {
         $query = "SELECT COUNT(*) as total FROM usuarios";
         $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
+    // Obtener el número total de usuarios, excluyendo al usuario actual y aplicando filtro de búsqueda
+    public function getTotalUsersExcludingCurrent($currentUserId, $search = '') {
+        $query = "SELECT COUNT(*) as total FROM usuarios WHERE id != :currentUserId";
+        if ($search) {
+            $query .= " AND (nombre LIKE :search OR username LIKE :search OR email LIKE :search)";
+        }
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':currentUserId', $currentUserId, PDO::PARAM_INT);
+        if ($search) {
+            $searchParam = '%' . $search . '%';
+            $stmt->bindParam(':search', $searchParam, PDO::PARAM_STR);
+        }
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }

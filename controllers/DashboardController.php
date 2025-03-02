@@ -17,6 +17,15 @@ class DashboardController {
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
+    // Obtener el número total de usuarios, excluyendo al usuario actual
+    public function getTotalUsersExcludingCurrent($currentUserId) {
+        $query = "SELECT COUNT(*) as total FROM usuarios WHERE id != :currentUserId";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':currentUserId', $currentUserId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+
     // Obtener el número total de archivos
     public function getTotalFiles() {
         $query = "SELECT COUNT(*) as total FROM archivos";
@@ -29,6 +38,16 @@ class DashboardController {
     public function getLatestUsers($limit = 5) {
         $query = "SELECT * FROM usuarios ORDER BY id DESC LIMIT :limit";
         $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Obtener los últimos usuarios registrados, excluyendo al usuario actual
+    public function getLatestUsersExcludingCurrent($currentUserId, $limit = 5) {
+        $query = "SELECT * FROM usuarios WHERE id != :currentUserId ORDER BY id DESC LIMIT :limit";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':currentUserId', $currentUserId, PDO::PARAM_INT);
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -9,9 +9,9 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 $dashboardController = new DashboardController();
-$totalUsers = $dashboardController->getTotalUsers();
+$totalUsers = $dashboardController->getTotalUsersExcludingCurrent($_SESSION['usuario_id']);
 $totalFiles = $dashboardController->getTotalFiles();
-$latestUsers = $dashboardController->getLatestUsers();
+$latestUsers = $dashboardController->getLatestUsersExcludingCurrent($_SESSION['usuario_id']);
 $latestFiles = $dashboardController->getLatestFiles();
 ?>
 <!DOCTYPE html>

@@ -24,26 +24,29 @@ $filtroNombreUsuario = $_GET['filtro_nombre_usuario'] ?? null;
 
 // Obtener historial de archivos con filtros y paginación
 $historial = $fileController->obtenerHistorial(null, $filtroNombre, $filtroFecha, $filtroNombreUsuario, $limit, $offset);
-$totalFiles = $fileController->getTotalFiles();
+$totalFiles = $fileController->getTotalFiles($filtroNombre, $filtroFecha, $filtroNombreUsuario);
 $totalPages = ceil($totalFiles / $limit);
 
-// Obtener todos los usuarios
-$usuarios = $userController->getAllUsers();
 
-// Filtrar el usuario administrador que ha iniciado sesión
-$usuarios = array_filter($usuarios, function($usuario) {
-    return $usuario['id'] !== $_SESSION['usuario_id'];
-});
+// Obtener todos los usuarios
+$usuarios = $userController->getAllUsersExcludingCurrent(null, null, $_SESSION['usuario_id']);
 
 // Manejar la subida de archivos
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
     $usuario_id = $_POST['usuario_id'];
     $archivo = $_FILES['archivo'];
-    if ($fileController->asignarArchivo($usuario_id, $archivo)) {
-        $mensaje = "Archivo asignado correctamente.";
-    } else {
-        $mensaje = "Error al asignar el archivo.";
+    try {
+        $fileController->asignarArchivo($usuario_id, $archivo);
+    } catch (Exception $e) {
+        // Manejar el error si es necesario
     }
+}
+
+// Manejar la eliminación de archivos
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    $fileController->eliminarAsignacion($_GET['id']);
+    header("Location: asignar_archivo.php");
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -69,9 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
             
             <section>
                 <h2 class="section-title"><i class="fas fa-file-upload"></i> Asignar Archivo</h2>
-                <?php if (isset($mensaje)): ?>
-                    <div class="alert alert-info"><?php echo $mensaje; ?></div>
-                <?php endif; ?>
                 <form action="asignar_archivo.php" method="POST" enctype="multipart/form-data" class="form-container mb-4">
                     <div class="row">
                         <div class="col-md-6">
@@ -155,6 +155,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
                                     <a href="../public/descarga.php?archivo=<?php echo urlencode($archivo['nombre_archivo']); ?>" 
                                        class="btn btn-primary btn-sm">
                                        <i class="fas fa-download"></i> Descargar
+                                    </a>
+                                    <a href="../views/asignar_archivo.php?action=delete&id=<?php echo $archivo['id']; ?>" 
+                                       class="btn btn-danger btn-sm" 
+                                       onclick="return confirm('¿Estás seguro de eliminar esta asignación de archivo?');">
+                                       <i class="fas fa-trash"></i> Eliminar
                                     </a>
                                 </td>
                             </tr>

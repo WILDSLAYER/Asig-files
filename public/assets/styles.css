@@ -496,3 +496,14 @@ body.dashboard-page {
     border-radius: 8px;
     box-shadow: var(--shadow);
 }
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; /* Separar por 5px */
+}
+
+.search-button {
+    height: 100%; /* Ajustar la altura del botón de búsqueda */
+}
