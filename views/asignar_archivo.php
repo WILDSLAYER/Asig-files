@@ -68,7 +68,7 @@ if (isset($_SESSION['mensaje'])) {
             
             <section>
                 <h2 class="section-title"><i class="fas fa-file-upload"></i> Asignar Archivo</h2>
-                <?php if (isset($mensaje)): ?>
+                <?php if (!empty($mensaje)): ?>
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
                             Swal.fire({
