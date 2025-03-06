@@ -4,7 +4,6 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     header("Location: login.php");
     exit();
 }
-
 require_once '../config/config.php';
 require_once '../controllers/FileController.php';
 require_once '../controllers/UserController.php';
@@ -27,27 +26,13 @@ $historial = $fileController->obtenerHistorial(null, $filtroNombre, $filtroFecha
 $totalFiles = $fileController->getTotalFiles($filtroNombre, $filtroFecha, $filtroNombreUsuario);
 $totalPages = ceil($totalFiles / $limit);
 
-
 // Obtener todos los usuarios
 $usuarios = $userController->getAllUsersExcludingCurrent(null, null, $_SESSION['usuario_id']);
 
-// Manejar la subida de archivos
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
-    $usuario_id = $_POST['usuario_id'];
-    $archivo = $_FILES['archivo'];
-    try {
-        $fileController->asignarArchivo($usuario_id, $archivo);
-    } catch (Exception $e) {
-        // Manejar el error si es necesario
-    }
-}
+// Manejar mensajes de éxito o error
+$mensaje = isset($_GET['mensaje']) ? $_GET['mensaje'] : '';
+$tipoMensaje = isset($_GET['tipoMensaje']) ? $_GET['tipoMensaje'] : '';
 
-// Manejar la eliminación de archivos
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    $fileController->eliminarAsignacion($_GET['id']);
-    header("Location: asignar_archivo.php");
-    exit();
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -58,8 +43,19 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/assets/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-page">
+<?php
+// Mostrar mensajes de sesión
+if (isset($_SESSION['mensaje'])) {
+    $mensaje = $_SESSION['mensaje'];
+    $tipoMensaje = $_SESSION['tipoMensaje'] ?? 'info';
+    unset($_SESSION['mensaje']);
+    unset($_SESSION['tipoMensaje']);
+}
+?>
     <div class="dashboard-container">
         <?php require __DIR__ . '/../views/sidebar.php'; ?>
         <main class="main-content">
@@ -72,7 +68,20 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
             
             <section>
                 <h2 class="section-title"><i class="fas fa-file-upload"></i> Asignar Archivo</h2>
-                <form action="asignar_archivo.php" method="POST" enctype="multipart/form-data" class="form-container mb-4">
+                <?php if (isset($mensaje)): ?>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: '<?php echo $tipoMensaje; ?>',
+                                title: '<?php echo $mensaje; ?>',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        });
+                    </script>
+                <?php endif; ?>
+                <form action="../controllers/FileController.php" method="POST" enctype="multipart/form-data" class="form-container mb-4">
+                    <input type="hidden" name="action" value="upload">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -145,25 +154,29 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
                             <th><i class="fas fa-cogs"></i> Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php foreach ($historial as $archivo): ?>
+                    <tbody id="archivoTableBody">
+                        <?php if (empty($historial)): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($archivo['nombre_usuario']); ?></td>
-                                <td><?php echo htmlspecialchars($archivo['nombre_archivo']); ?></td>
-                                <td><?php echo htmlspecialchars($archivo['fecha_subida']); ?></td>
-                                <td class="action-buttons">
-                                    <a href="../public/descarga.php?archivo=<?php echo urlencode($archivo['nombre_archivo']); ?>" 
-                                       class="btn btn-primary btn-sm">
-                                       <i class="fas fa-download"></i> Descargar
-                                    </a>
-                                    <a href="../views/asignar_archivo.php?action=delete&id=<?php echo $archivo['id']; ?>" 
-                                       class="btn btn-danger btn-sm" 
-                                       onclick="return confirm('¿Estás seguro de eliminar esta asignación de archivo?');">
-                                       <i class="fas fa-trash"></i> Eliminar
-                                    </a>
-                                </td>
+                                <td colspan="4" class="text-center">No hay asignaciones</td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php else: ?>
+                            <?php foreach ($historial as $archivo): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($archivo['nombre_usuario']); ?></td>
+                                    <td><?php echo htmlspecialchars($archivo['nombre_archivo']); ?></td>
+                                    <td><?php echo htmlspecialchars($archivo['fecha_subida']); ?></td>
+                                    <td class="action-buttons">
+                                        <a href="../public/descarga.php?archivo=<?php echo urlencode($archivo['nombre_archivo']); ?>" 
+                                           class="btn btn-primary btn-sm">
+                                           <i class="fas fa-download"></i> Descargar
+                                        </a>
+                                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(<?php echo $archivo['id']; ?>)">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
                 <nav aria-label="Page navigation example">
@@ -179,9 +192,23 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         </main>
     </div>
     <script>
-        // Opcional: Agregar algún JavaScript para mejorar la experiencia de usuario
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "No podrás revertir esto",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminarlo'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '../controllers/FileController.php?action=delete&id=' + id;
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Destacar la fila cuando el mouse está sobre ella
             const rows = document.querySelectorAll('.custom-table tbody tr');
             rows.forEach(row => {
                 row.addEventListener('mouseover', function() {

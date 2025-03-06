@@ -33,6 +33,18 @@ class FileController {
             return "Extensión no permitida: " . $extension;
         }
 
+        // Verificar si el archivo ya está asignado al usuario
+        $query = "SELECT COUNT(*) as total FROM archivos WHERE usuario_id = :usuario_id AND nombre_archivo = :nombre_archivo";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':usuario_id', $usuario_id, PDO::PARAM_INT);
+        $stmt->bindParam(':nombre_archivo', $nombreArchivo, PDO::PARAM_STR);
+        $stmt->execute();
+        $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+        if ($total > 0) {
+            return "El archivo ya está asignado a este usuario.";
+        }
+
         if (move_uploaded_file($archivo['tmp_name'], $ruta)) {
             $query = "INSERT INTO archivos (usuario_id, nombre_archivo, ruta, fecha_subida) 
                       VALUES (:usuario_id, :nombre_archivo, :ruta, NOW())";
@@ -124,30 +136,74 @@ class FileController {
 
     // Eliminar la asignación de un archivo
     public function eliminarAsignacion($archivo_id) {
-        $query = "SELECT ruta FROM archivos WHERE id = :archivo_id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':archivo_id', $archivo_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $archivo = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-        if ($archivo) {
-            $ruta = $archivo['ruta'];
-
-            $query = "DELETE FROM archivos WHERE id = :archivo_id";
+        $this->db->beginTransaction();
+        try {
+            $query = "SELECT ruta FROM archivos WHERE id = :archivo_id FOR UPDATE";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':archivo_id', $archivo_id, PDO::PARAM_INT);
             $stmt->execute();
+            $archivo = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+            if ($archivo) {
+                $ruta = $archivo['ruta'];
 
-            $query = "SELECT COUNT(*) as total FROM archivos WHERE ruta = :ruta";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':ruta', $ruta, PDO::PARAM_STR);
-            $stmt->execute();
-            $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+                $query = "DELETE FROM archivos WHERE id = :archivo_id";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':archivo_id', $archivo_id, PDO::PARAM_INT);
+                $stmt->execute();
 
-            if ($total == 0 && file_exists($ruta)) {
-                unlink($ruta);
+                $query = "SELECT COUNT(*) as total FROM archivos WHERE ruta = :ruta";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':ruta', $ruta, PDO::PARAM_STR);
+                $stmt->execute();
+                $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+                if ($total == 0 && file_exists($ruta)) {
+                    unlink($ruta);
+                }
             }
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
     }
+
+    // Manejar la subida de archivos
+    public function handleFileUpload() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo'])) {
+            $usuario_id = $_POST['usuario_id'];
+            $archivo = $_FILES['archivo'];
+            try {
+                return $this->asignarArchivo($usuario_id, $archivo);
+            } catch (Exception $e) {
+                return "Error al asignar el archivo: " . $e->getMessage();
+            }
+        }
+        return null;
+    }
+
 }
-?>
+
+// Manejo de acciones
+if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
+    $fileController = new FileController();
+
+    // Manejar la subida de archivos
+    if (isset($_POST['action']) && $_POST['action'] === 'upload') {
+        $mensaje = $fileController->handleFileUpload();
+        header("Location: ../views/asignar_archivo.php?mensaje=$mensaje&tipoMensaje=info");
+        exit();
+    }
+
+    // Eliminar una asignación de archivo
+    if (isset($_GET['action']) && $_GET['action'] === 'delete') {
+        if ($fileController->eliminarAsignacion($_GET['id'])) {
+            header("Location: ../views/asignar_archivo.php?mensaje=Asignación eliminada correctamente&tipoMensaje=success");
+        } else {
+            header("Location: ../views/asignar_archivo.php?mensaje=Error al eliminar la asignación&tipoMensaje=error");
+        }
+        exit();
+    }
+
+}

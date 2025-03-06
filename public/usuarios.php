@@ -21,6 +21,10 @@ $userController = new UserController();
 $users = $userController->getAllUsersExcludingCurrent($limit, $offset, $_SESSION['usuario_id'], $search);
 $totalUsers = $userController->getTotalUsersExcludingCurrent($_SESSION['usuario_id'], $search);
 $totalPages = ceil($totalUsers / $limit);
+
+// Manejar mensajes de éxito o error
+$mensaje = isset($_GET['mensaje']) ? $_GET['mensaje'] : '';
+$tipoMensaje = isset($_GET['tipoMensaje']) ? $_GET['tipoMensaje'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -31,6 +35,8 @@ $totalPages = ceil($totalUsers / $limit);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/public/assets/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-page">
     <div class="dashboard-container">
@@ -64,7 +70,6 @@ $totalPages = ceil($totalUsers / $limit);
                 <table class="custom-table">
                     <thead>
                         <tr>
-                            <th><i class="fas fa-hashtag"></i> ID</th>
                             <th><i class="fas fa-user"></i> Nombre</th>
                             <th><i class="fas fa-user"></i> Usuario</th>
                             <th><i class="fas fa-envelope"></i> Correo</th>
@@ -75,15 +80,10 @@ $totalPages = ceil($totalUsers / $limit);
                     <tbody>
                         <?php foreach ($users as $user): ?>
                             <tr>
-                                <td><?php echo $user['id']; ?></td>
                                 <td><?php echo $user['nombre']; ?></td>
                                 <td><?php echo $user['username']; ?></td>
                                 <td><?php echo $user['email']; ?></td>
-                                <td>
-                                    <span class="badge <?php echo $user['rol'] === 'admin' ? 'badge-admin' : 'badge-user'; ?>">
-                                        <?php echo $user['rol']; ?>
-                                    </span>
-                                </td>
+                                <td><?php echo $user['rol']; ?></td>
                                 <td class="action-buttons">
                                     <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal<?php echo $user['id']; ?>">
                                         <i class="fas fa-edit"></i> Editar
@@ -160,6 +160,18 @@ $totalPages = ceil($totalUsers / $limit);
                         <li><a href="?page=<?php echo $i; ?>" class="<?php echo $i === $page ? 'active' : ''; ?>"><?php echo $i; ?></a></li>
                     <?php endfor; ?>
                 </ul>
+                <?php if ($mensaje): ?>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: '<?php echo $tipoMensaje; ?>',
+                                title: '<?php echo $mensaje; ?>',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        });
+                    </script>
+                <?php endif; ?>
             </section>
         </main>
     </div>
@@ -175,7 +187,6 @@ $totalPages = ceil($totalUsers / $limit);
                 <div class="modal-body">
                     <form action="../controllers/UserController.php" method="POST" autocomplete="off">
                         <input type="hidden" name="action" value="create">
-                        
                         <div class="grupo_inputs">
                             <div class="form-group">
                                 <label for="nombre"><i class="fas fa-user"></i> Nombre completo </label>
@@ -234,6 +245,16 @@ $totalPages = ceil($totalUsers / $limit);
                     this.style.backgroundColor = '';
                 });
             });
+
+            // Mostrar alerta si hay un mensaje
+            <?php if ($mensaje): ?>
+            Swal.fire({
+                icon: '<?php echo $tipoMensaje; ?>',
+                title: '<?php echo $mensaje; ?>',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            <?php endif; ?>
         });
     </script>
 </body>
