@@ -182,7 +182,6 @@ class FileController {
         }
         return null;
     }
-
 }
 
 // Manejo de acciones
@@ -205,5 +204,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['action'])) {
         }
         exit();
     }
-
 }

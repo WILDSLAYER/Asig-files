@@ -64,5 +64,18 @@ class DashboardController {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Obtener el último archivo asignado a un usuario
+    public function getUltimoArchivoAsignado($usuario_id) {
+        $query = "SELECT archivos.*, usuarios.nombre AS nombre_usuario 
+                  FROM archivos 
+                  JOIN usuarios ON archivos.usuario_id = usuarios.id 
+                  WHERE archivos.usuario_id = :usuario_id 
+                  ORDER BY archivos.fecha_subida DESC LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':usuario_id', $usuario_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

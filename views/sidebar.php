@@ -57,14 +57,11 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin') {
         </div>
         
         <nav class="nav-menu">
-            <a href="dashboard.php" class="active">
+            <a href="dashboard.php">
                 <i class="fas fa-home"></i> Inicio
             </a>
-            <a href="archivos.php">
+            <a href="../public/mis_archivos.php">
                 <i class="fas fa-file-alt"></i> Mis Archivos
-            </a>
-            <a href="configuracion.php">
-                <i class="fas fa-cog"></i> Configuración
             </a>
         </nav>
     </div>
